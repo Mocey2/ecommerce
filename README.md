@@ -1,1 +1,1 @@
-# django_ecommerce
+ecommerce
