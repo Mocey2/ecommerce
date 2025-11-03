@@ -1,0 +1,118 @@
+{% extends "base/base.html" %}
+{% block title %}{{ header.titre }}{% endblock %}
+
+{% block content %}
+<section class="hero-wrap hero-wrap-2" style="background-image: url('{{ header.image_fond.url }}');" data-stellar-background-ratio="0.5">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-end justify-content-center">
+      <div class="col-md-9 ftco-animate mb-5 text-center">
+        <p class="breadcrumbs mb-0">
+          <span class="mr-2"><a href="{% url 'accueil' %}">Accueil <i class="fa fa-chevron-right"></i></a></span>
+          <span>{{ header.sous_titre }} <i class="fa fa-chevron-right"></i></span>
+        </p>
+        <h2 class="mb-0 bread">{{ header.titre }}</h2>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9">
+        <div class="row mb-4">
+          <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <h4 class="product-select">Sélectionnez la catégorie des produits qui vous intéresse</h4>
+            <form method="get">
+              <select name="categorie" class="selectpicker" onchange="this.form.submit()">
+                <option value="">Toutes</option>
+                {% for cat in categories %}
+                  <option value="{{ cat.nom }}" {% if request.GET.categorie == cat.nom %}selected{% endif %}>{{ cat.nom }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          {% for produit in produits %}
+          <div class="col-md-4 d-flex">
+            <div class="product ftco-animate">
+              <div class="img d-flex align-items-center justify-content-center" style="background-image: url('{{ produit.image_liste.url }}');">
+                <div class="desc">
+                   {% if produit.stock > 0 %}
+                  <p class="meta-prod d-flex">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'panier-ajout' produit.slug %}" class="d-flex align-items-center justify-content-center">
+                      <span class="flaticon-shopping-bag"></span>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'produit-detail' slug=produit.slug %}" class="d-flex align-items-center justify-content-center">
+                      <span class="flaticon-visibility"></span>
+                    </a>
+                  </p>
+                    {% endif %}
+                </div>
+              </div>
+              <div class="text text-center">
+                {% if produit.est_en_promo %}
+                  <span class="sale">Promo</span>
+                {% endif %}
+                <span class="category">{{ produit.categorie.nom }}</span>
+                <h2>{{ produit.nom }}</h2>
+                {% if produit.stock == 0 %}
+                  <span class="badge badge-danger">Rupture</span>
+                {% endif %}
+                <p class="mb-0">
+                  {% if produit.est_en_promo %}
+                    <span class="price price-sale">{{ produit.prix|floatformat:0 }} FCFA</span>
+                    <span class="price">{{ produit.prix_promo|floatformat:0 }} FCFA</span>
+                  {% else %}
+                    <span class="price">{{ produit.prix|floatformat:0 }} FCFA</span>
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-5">
+          <div class="col text-center">
+            <div class="block-27">
+              <ul>
+                {% if produits.has_previous %}
+                  <li><a href="?page={{ produits.previous_page_number }}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}">&lt;</a></li>
+                {% endif %}
+                {% for i in produits.paginator.page_range %}
+                  <li class="{% if produits.number == i %}active{% endif %}">
+                    <a href="?page={{ i }}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}">{{ i }}</a>
+                  </li>
+                {% endfor %}
+                {% if produits.has_next %}
+                  <li><a href="?page={{ produits.next_page_number }}{% if request.GET.categorie %}&categorie={{ request.GET.categorie }}{% endif %}">&gt;</a></li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar catégories -->
+      <div class="col-md-3">
+        <div class="sidebar-box ftco-animate">
+          <div class="categories">
+            <h3>Product Types</h3>
+            <ul class="p-0">
+              {% for cat in categories %}
+              <li><a href="?categorie={{ cat.nom }}">{{ cat.nom }} <span class="fa fa-chevron-right"></span></a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

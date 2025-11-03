@@ -1,0 +1,136 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<section class="hero-wrap hero-wrap-2" style="background-image: url('{{ header.image_fond.url }}');" data-stellar-background-ratio="0.5">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-end justify-content-center">
+      <div class="col-md-9 ftco-animate mb-5 text-center">
+        <p class="breadcrumbs mb-0">
+          <span class="mr-2"><a href="{% url 'accueil' %}">{{ header.sous_titre|safe }}</a> <i class="fa fa-chevron-right"></i></span>
+          <span>About us <i class="fa fa-chevron-right"></i></span>
+        </p>
+        <h2 class="mb-0 bread">{{ header.titre }}</h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-intro py-5">
+  <div class="container">
+    <div class="row no-gutters">
+      {% for card in cards %}
+      <div class="col-md-4 d-flex mb-4">
+        <div class="intro {{ card.couleur }} d-lg-flex w-100 ftco-animate shadow-sm rounded p-3">
+          <div class="icon">
+            <span class="{{ card.icone }}"></span>
+          </div>
+          <div class="text ps-3">
+            <h2>{{ card.titre }}</h2>
+            <p>{{ card.description }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section ftco-no-pb pb-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 img img-3 d-flex justify-content-center align-items-center rounded shadow" style="background-image: url('{{ about.image.url }}'); min-height: 400px;">
+      </div>
+      <div class="col-md-6 wrap-about pl-md-5 ftco-animate py-5">
+        <div class="heading-section">
+          <span class="subheading">{{ about.sous_titre }}</span>
+          <h2 class="mb-4">{{ about.titre }}</h2>
+          <p>{{ about.paragraphe_1 }}</p>
+          <p>{{ about.paragraphe_2 }}</p>
+          <p class="year mt-4">
+            <strong class="number" data-number="{{ about.nombre_annees }}">0</strong>
+            <span>Années d'expérience</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section ftco-no-pb">
+  <div class="container">
+    <div class="row">
+      {% for produit in produits %}
+        {% if forloop.counter <= 6 %}
+        <div class="col-lg-2 col-md-4">
+          <div class="sort w-100 text-center ftco-animate">
+            <div class="img" style="background-image: url('{{ produit.image_liste.url }}'); height: 120px; background-size: cover;"></div>
+            <h3>{{ produit.nom }}</h3>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<br>
+<br>
+
+<section class="ftco-section testimony-section img" style="background-image: url('{{ temoignage_bg.image_fond.url }}');">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-7 text-center heading-section heading-section-white ftco-animate">
+        <span class="subheading">Témoignages</span>
+        <h2 class="mb-3">Ce que disent nos clients</h2>
+      </div>
+    </div>
+    <div class="row ftco-animate">
+      <div class="col-md-12">
+        <div class="carousel-testimony owl-carousel ftco-owl">
+          {% for temoignage in temoignages %}
+          <div class="item">
+            <div class="testimony-wrap py-4">
+              <div class="icon d-flex align-items-center justify-content-center">
+                <span class="fa fa-quote-left"></span>
+              </div>
+              <div class="text">
+                <p class="mb-4">{{ temoignage.message }}</p>
+                <div class="d-flex align-items-center">
+                  <div class="user-img" style="background-image: url('{{ temoignage.photo.url }}')"></div>
+                  <div class="pl-3">
+                    <p class="name">{{ temoignage.nom }}</p>
+                    <span class="position">{{ temoignage.poste }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-counter ftco-section ftco-no-pt ftco-no-pb img bg-light" id="section-counter">
+  <div class="container">
+    <div class="row">
+      {% for counter in counters %}
+      <div class="col-md-6 col-lg-3 justify-content-center counter-wrap ftco-animate">
+        <div class="block-18 py-4 mb-4">
+          <div class="text align-items-center">
+            <strong class="number" data-number="{{ counter.valeur }}">0</strong>
+            <span>{{ counter.titre }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+
+{% endblock %}

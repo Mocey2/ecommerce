@@ -1,0 +1,14 @@
+{% for commentaire in commentaires %}
+<li class="comment">
+  <div class="comment-body">
+    <h3>{{ commentaire.utilisateur.prenom }}</h3>
+    <div class="meta">{{ commentaire.date|date:"d M Y à H:i" }}</div>
+    <p>{{ commentaire.contenu }}</p>
+  </div>
+  {% if commentaire.reponses.all %}
+    <ul class="children">
+      {% include "blog/partials/commentaires.html" with commentaires=commentaire.reponses.all %}
+    </ul>
+  {% endif %}
+</li>
+{% endfor %}

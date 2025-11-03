@@ -1,0 +1,103 @@
+{% extends 'base/base.html' %}
+{% block title %}{{ article.titre }}{% endblock %}
+
+{% block content %}
+
+<!-- Bannière -->
+<section class="hero-wrap hero-wrap-2" style="background-image: url('{{ article.image_banniere.url }}');" data-stellar-background-ratio="0.5">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-end justify-content-center">
+      <div class="col-md-9 text-center mb-5">
+        <p class="breadcrumbs mb-0">
+          <span class="mr-2"><a href="{% url 'accueil' %}">Accueil <i class="fa fa-chevron-right"></i></a></span>
+          <span><a href="{% url 'blog' %}">Blog <i class="fa fa-chevron-right"></i></a></span>
+          <span>{{ article.titre }} <i class="fa fa-chevron-right"></i></span>
+        </p>
+        <h2 class="mb-0 bread">{{ article.titre }}</h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Détail article -->
+<section class="ftco-section ftco-degree-bg">
+  <div class="container">
+    <div class="row">
+      <!-- Article principal -->
+      <div class="col-lg-8 ftco-animate">
+        <p><img src="{{ article.image_detail.url }}" alt="{{ article.titre }}" class="img-fluid"></p>
+
+        <h2 class="mb-3">{{ article.titre }}</h2>
+        <p>{{ article.intro }}</p>
+
+        {% if article.paragraphe_2 %}<p>{{ article.paragraphe_2 }}</p>{% endif %}
+        {% if article.paragraphe_3 %}<p>{{ article.paragraphe_3 }}</p>{% endif %}
+        {% if article.paragraphe_4 %}<p>{{ article.paragraphe_4 }}</p>{% endif %}
+        {% if article.paragraphe_5 %}<p>{{ article.paragraphe_5 }}</p>{% endif %}
+
+        <div class="tag-widget post-tag-container mt-4 mb-5">
+          <div class="tagcloud">
+            {% for tag in article.tags.all %}
+              <a href="#" class="tag-cloud-link">{{ tag.nom }}</a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="about-author d-flex bg-light p-4 mb-5">
+          <div class="desc">
+            <h3>{{ article.auteur.get_full_name|default:article.auteur.prenom }}</h3>
+            <p>Article publié le {{ article.date_publication|date:"d M Y" }}</p>
+          </div>
+        </div>
+
+        <!-- Commentaires -->
+        <div class="pt-5 mt-5">
+          <h3 class="mb-5">{{ commentaires.count }} Commentaire(s)</h3>
+          <ul class="comment-list">
+            {% include "blog/partials/commentaires.html" with commentaires=commentaires %}
+          </ul>
+
+          <!-- Formulaire de commentaire -->
+          {% if user.is_authenticated %}
+          <div class="comment-form-wrap pt-5">
+            <h3 class="mb-5">Laisser un commentaire</h3>
+            <form method="post" class="p-4 bg-light">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="comment">Message</label>
+                <textarea name="comment" cols="30" rows="5" class="form-control" required></textarea>
+              </div>
+              <div class="form-group">
+                <input type="submit" value="Poster le commentaire" class="btn btn-primary py-2 px-4">
+              </div>
+            </form>
+          </div>
+          {% else %}
+            <p>Vous devez <a href="{% url 'login' %}">vous connecter</a> pour commenter.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4 sidebar pl-lg-5 ftco-animate">
+        <div class="sidebar-box ftco-animate">
+          <h3>Articles récents</h3>
+          {% for art in articles_recents %}
+          <div class="block-21 mb-4 d-flex">
+            <a class="blog-img mr-4" style="background-image: url('{{ art.image_card.url }}');"></a>
+            <div class="text">
+              <h3 class="heading"><a href="{% url 'blog-detail' slug=art.slug %}">{{ art.titre }}</a></h3>
+              <div class="meta">
+                <div><span class="fa fa-calendar"></span> {{ art.date_publication|date:"M d, Y" }}</div>
+                <div><span class="fa fa-user"></span> {{ art.auteur.username }}</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

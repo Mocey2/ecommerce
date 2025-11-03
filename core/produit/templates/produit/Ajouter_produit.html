@@ -1,0 +1,211 @@
+{% extends "base/base.html" %}
+{% block title %}Ajouter un produit{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* espace vertical confortable entre champs */
+  .form-section .form-group { margin-bottom: 1rem; }
+  @media (min-width: 992px) {
+    .form-section .form-group { margin-bottom: 1.1rem; }
+  }
+  /* apparence des sous-titres de section */
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: #6c757d;
+    margin-bottom: .75rem;
+    text-transform: uppercase;
+  }
+  .divider { border-top: 1px solid rgba(0,0,0,.06); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xxl-9 col-lg-10">
+        <div class="card border-0 shadow-lg">
+          <div class="card-body p-4 p-md-5">
+            <!-- En-tête -->
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="rounded-circle bg-primary-subtle p-3">
+                <i class="bi bi-box-seam fs-4 text-primary"></i>
+              </div>
+              <div>
+                <h1 class="h3 mb-1">Ajouter un produit</h1>
+                <p class="text-muted mb-0">Renseignez les informations essentielles. Le lien (slug) est généré automatiquement.</p>
+              </div>
+            </div>
+
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mb-4">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+              {% csrf_token %}
+
+              <!-- Section : Informations principales -->
+              <div class="form-section mb-4">
+                <div class="section-title">Informations principales</div>
+                <div class="row gy-3 gx-3">
+                  <div class="col-lg-8">
+                    <div class="form-group">
+                      <label class="form-label">Nom *</label>
+                      <input type="text" name="nom" class="form-control form-control-lg" placeholder="Ex. Chaussures Running Pro" required>
+                      <div class="invalid-feedback">Le nom est requis.</div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="form-group">
+                      <label class="form-label">Catégorie *</label>
+                      <select name="categorie" class="form-select form-select-lg" required>
+                        <option value="" selected disabled>— Choisir —</option>
+                        {% for c in categories %}
+                          <option value="{{ c.id }}">{{ c.nom }}</option>
+                        {% endfor %}
+                      </select>
+                      <div class="invalid-feedback">La catégorie est requise.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider my-4"></div>
+
+              <!-- Section : Tarification & Stock -->
+              <div class="form-section mb-4">
+                <div class="section-title">Tarification & Stock</div>
+                <div class="row gy-3 gx-3">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="form-label">Prix *</label>
+                      <input type="number" step="0.01" name="prix" class="form-control" placeholder="0.00" required>
+                      <div class="invalid-feedback">Le prix est requis.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="form-label">Prix promo</label>
+                      <input type="number" step="0.01" name="prix_promo" class="form-control" placeholder="0.00">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="form-label">Stock *</label>
+                      <input type="number" min="0" name="stock" class="form-control" placeholder="0" required>
+                      <div class="invalid-feedback">Le stock est requis.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider my-4"></div>
+
+              <!-- Section : Médias -->
+              <div class="form-section mb-4">
+                <div class="section-title">Médias</div>
+                <div class="row gy-3 gx-3">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-label">Image (liste) *</label>
+                      <input type="file" name="image_liste" class="form-control" accept="image/*" required>
+                      <div class="form-text">Affichée dans les grilles/liste de produits.</div>
+                      <img id="previewListe" class="img-fluid rounded mt-2 d-none" alt="Aperçu image liste">
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-label">Image (bannière) *</label>
+                      <input type="file" name="image_banniere" class="form-control" accept="image/*" required>
+                      <div class="form-text">Affichée en tête de la page produit.</div>
+                      <img id="previewBanniere" class="img-fluid rounded mt-2 d-none" alt="Aperçu image bannière">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider my-4"></div>
+
+              <!-- Section : Détails -->
+              <div class="form-section mb-2">
+                <div class="section-title">Détails</div>
+                <div class="row gy-3 gx-3">
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label class="form-label">Présentation *</label>
+                      <textarea name="presentation" class="form-control" rows="2" placeholder="Résumé court du produit" required></textarea>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-group">
+                      <label class="form-label">Description *</label>
+                      <textarea name="description" class="form-control" rows="5" placeholder="Description détaillée, caractéristiques, usages..." required></textarea>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-label">Fabricant *</label>
+                      <input type="text" name="fabricant" class="form-control" placeholder="Ex. Amoura Inc." required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2 mt-4">
+                <button type="submit" class="btn btn-primary px-4">
+                  <i class="bi bi-check2"></i> Enregistrer
+                </button>
+                <a href="{% url 'liste-produit-vendeur' %}" class="btn btn-outline-secondary">
+                  <i class="bi bi-card-list"></i> Mes produits
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <p class="text-muted small mt-3 mb-0">
+          * Les champs marqués d’un astérisque sont obligatoires.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Bootstrap 5 validation
+(function () {
+  'use strict';
+  const forms = document.querySelectorAll('.needs-validation');
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+
+// Previews image
+function preview(input, imgId) {
+  const file = input.files && input.files[0];
+  const img = document.getElementById(imgId);
+  if (!file || !img) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    img.src = e.target.result;
+    img.classList.remove('d-none');
+  };
+  reader.readAsDataURL(file);
+}
+document.querySelector('input[name="image_liste"]')?.addEventListener('change', e => preview(e.target, 'previewListe'));
+document.querySelector('input[name="image_banniere"]')?.addEventListener('change', e => preview(e.target, 'previewBanniere'));
+</script>
+{% endblock %}

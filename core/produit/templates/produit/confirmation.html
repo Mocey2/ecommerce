@@ -1,0 +1,12 @@
+{% extends "base/base.html" %}
+{% block title %}Commande Validée{% endblock %}
+
+{% block content %}
+<section class="ftco-section">
+  <div class="container text-center">
+    <h2 class="mb-4 text-success">Merci pour votre commande !</h2>
+    <p>Votre commande a été enregistrée avec succès. Vous recevrez bientôt une confirmation par email.</p>
+    <a href="{% url 'produits' %}" class="btn btn-primary mt-4">Continuer vos achats</a>
+  </div>
+</section>
+{% endblock %}

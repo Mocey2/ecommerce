@@ -1,0 +1,160 @@
+{% extends "base/base.html" %}
+{% block title %}Approbation des produits{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h3 mb-0">Approbation des produits</h1>
+      <a href="{% url 'produits' %}" class="btn btn-outline-secondary">Retour à la boutique</a>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-3">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- En attente d'approbation -->
+    <div class="card border-0 shadow-sm mb-5">
+      <div class="card-body">
+        <h2 class="h5 mb-3">En attente d'approbation</h2>
+        {% if en_attente %}
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th style="width:64px">Image</th>
+                  <th>Nom</th>
+                  <th>Vendeur</th>
+                  <th>Catégorie</th>
+                  <th>Prix</th>
+                  <th>Stock</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in en_attente %}
+                <tr>
+                  <td>
+                    <img src="{{ p.image_liste.url }}" alt="{{ p.nom }}" class="rounded" style="width:64px;height:64px;object-fit:cover">
+                  </td>
+                  <td>{{ p.nom }}</td>
+                  <td>
+                    {% if p.vendeur %}
+                      {{ p.vendeur.prenom }} {{ p.vendeur.nom }}<br>
+                      <small class="text-muted">{{ p.vendeur.email }}</small>
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ p.categorie.nom }}</td>
+                  <td>{{ p.prix|floatformat:0 }} {% if p.prix_promo %}<small class="text-muted">(promo: {{ p.prix_promo|floatformat:0 }})</small>{% endif %}</td>
+                  <td>{{ p.stock }}</td>
+                  <td class="text-end">
+                    <div class="d-inline-flex gap-2">
+                      <form method="post" action="{% url 'admin-approbation-approuver' p.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm">Approuver</button>
+                      </form>
+                      <form method="post" action="{% url 'admin-approbation-rejeter' p.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Rejeter</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info mb-0">Aucun produit en attente.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Récemment approuvés -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Récemment approuvés</h2>
+        {% if approuves %}
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th style="width:64px">Image</th>
+                  <th>Nom</th>
+                  <th>Vendeur</th>
+                  <th>Catégorie</th>
+                  <th>Prix</th>
+                  <th>Stock</th>
+                  <th>Publié</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in approuves %}
+                <tr>
+                  <td><img src="{{ p.image_liste.url }}" alt="{{ p.nom }}" class="rounded" style="width:64px;height:64px;object-fit:cover"></td>
+                  <td><a href="{% url 'produit-detail' p.slug %}" target="_blank">{{ p.nom }}</a></td>
+                  <td>
+                    {% if p.vendeur %}
+                      {{ p.vendeur.prenom }} {{ p.vendeur.nom }}
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ p.categorie.nom }}</td>
+                  <td>{{ p.prix|floatformat:0 }}</td>
+                  <td>{{ p.stock }}</td>
+                  <td>{{ p.date_ajout|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-secondary mb-0">Aucun historique récent.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ✅ Récemment rejetés -->
+    {% if rejetes %}
+    <div class="card border-0 shadow-sm mt-5">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Récemment rejetés</h2>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th style="width:64px">Image</th>
+                <th>Nom</th>
+                <th>Vendeur</th>
+                <th>Catégorie</th>
+                <th>Prix</th>
+                <th>Stock</th>
+                <th>Décision</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in rejetes %}
+              <tr>
+                <td><img src="{{ p.image_liste.url }}" class="rounded" style="width:64px;height:64px;object-fit:cover"></td>
+                <td>{{ p.nom }}</td>
+                <td>{% if p.vendeur %}{{ p.vendeur.prenom }} {{ p.vendeur.nom }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>{{ p.categorie.nom }}</td>
+                <td>{{ p.prix|floatformat:0 }}</td>
+                <td>{{ p.stock }}</td>
+                <td><span class="badge text-bg-danger">Rejeté</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
